@@ -1,0 +1,14 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/ProjectEvaluation
+/.vs/ThesisApp/DesignTimeBuild
+/.vs/ThesisApp/FileContentIndex
+/.vs/ThesisApp/v17
+/.vs/VSWorkspaceState.json
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
+/API/Data/Migrations
+/API/thesisapp.db-shm
+/API/thesisapp.db-wal
