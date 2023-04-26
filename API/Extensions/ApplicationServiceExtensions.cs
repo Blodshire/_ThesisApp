@@ -19,20 +19,7 @@ namespace API.Extensions
             services.AddCors();
             //Transient,Scoped,Singleton
             services.AddScoped<ITokenService, TokenService>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        //it has to be validated by us
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                            config["TokenKey"])
-                        ),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
+            
 
             return services;
         }
