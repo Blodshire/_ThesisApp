@@ -25,7 +25,7 @@ namespace API.Controllers
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
         {
             if (await AlreadyExists(registerDto.UserName))
-                return BadRequest("UserName already in use");
+                return BadRequest("Felhasználónév használatban!");
 
             using var hmac = new HMACSHA512();
 
@@ -41,7 +41,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             return new UserDTO
             {
-                UserName = registerDto.UserName,
+                LoginName = registerDto.UserName,
                 Token = _tokenService.CreateToken(appUser)
             };
         }
@@ -57,7 +57,7 @@ namespace API.Controllers
             var appUser = await _context.AppUsers.FirstOrDefaultAsync(x => x.LoginName == loginDto.UserName);
             //consider SingleOrDefault
             if(appUser == null)
-                return Unauthorized();
+                return Unauthorized("Rosszul adta meg a jelszót!");
 
             using var hmac = new HMACSHA512(appUser.PasswordSalt);
 
@@ -66,11 +66,11 @@ namespace API.Controllers
             for(int i = 0; i < reversedHash.Length; i++)
             {
                 if (reversedHash[i] != appUser.PasswordHash[i])
-                    return Unauthorized("Invalid Password");
+                    return Unauthorized("Rosszul adta meg a jelszót!");
             }
             return new UserDTO
             {
-                UserName = loginDto.UserName,
+                LoginName = loginDto.UserName,
                 Token = _tokenService.CreateToken(appUser)
             };
 
