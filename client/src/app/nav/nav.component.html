@@ -13,25 +13,32 @@
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/messages" routerLinkActive="active">Üzenetek</a>
                 </li>
+
             </ng-container>
-           
+            <!--
+                Error testing page
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/errors" routerLinkActive="active">Minta hiba tesztelés</a>
+                </li>
+    -->
         </ul>
 
 
-        <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
-            <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>Üdv {{user.loginName | titlecase}}! :)</a>
-            <div class="dropdown-menu mt-3" *dropdownMenu>
-                <a class="dropdown-item">Profil szerkesztése</a>
-                <a class="dropdown-item" (click)="logout()">Kijelentkezés</a>
+            <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
+                <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>Üdv {{user.loginName | titlecase}}! :)</a>
+                <div class="dropdown-menu mt-3" *dropdownMenu>
+                    <a class="dropdown-item">Profil szerkesztése</a>
+                    <a class="dropdown-item" (click)="logout()">Kijelentkezés</a>
+                </div>
             </div>
+
+
+            <form *ngIf="!(accountService.currentUser$ | async)" #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off">
+                <input name="username" [(ngModel)]="model.username" class="form-control me-2" type="text" placeholder="Felhasználónév">
+                <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password" placeholder="Jelszó">
+                <button class="btn btn-success" type="submit">Bejelentkezés</button>
+            </form>
         </div>
 
-
-        <form *ngIf="!(accountService.currentUser$ | async)" #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off">
-            <input name="username" [(ngModel)]="model.username" class="form-control me-2" type="text" placeholder="Felhasználónév">
-            <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password" placeholder="Jelszó">
-            <button class="btn btn-success" type="submit">Bejelentkezés</button>
-        </form>
-    </div>
-
-</nav>
+    </nav>

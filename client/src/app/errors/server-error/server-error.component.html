@@ -1,0 +1,22 @@
+
+<h4>Szerveroldali hiba</h4>
+<img src="https://wpcred.com/wp-content/uploads/2022/06/500-Internal-Server-Error-amico-300x300.png" alt="Not Found"
+     style="display: block;margin-left: auto;margin-right: auto;">
+<button class="btn btn-outline-info btn-lg" style="display: block;margin-left: auto;margin-right: auto;"  routerLink="/">Vissza a főoldalra</button>
+<ng-container *ngIf="error">
+    <h5 class="text-danger">Error: {{error.message}}</h5>
+    <div>
+        <p class="font-weight-bold">Megjegyzés: Ha ezt látod nem a kliens oldalon van valami, és nem az angular a hibás! :)</p>
+
+        <p>Mi a teendő?</p>
+        <ol>
+            <li>Nyisd meg a devtoolst, a Network fült, és nézd meg mi történt.</li>
+            <li>Request url, api endpoint, a request bodyja, querystringje, stb- ezeket nézd át!</li>
+            <li>Postmanben replikáld a hibát. Ha a válasz ugyanaz, biztosan nem az angular oldalon van a baj.</li>
+        </ol>
+        <p style="font-weight: bold"> Stack tracet nézd meg:</p>
+        <code class="mt-5" style="background-color: whitesmoke;">
+            {{error.details}}
+        </code>
+    </div>
+</ng-container>
