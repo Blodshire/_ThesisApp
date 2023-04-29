@@ -45,7 +45,7 @@ namespace API.Data
 //    LoginName: '{{firstName("male")}}',
 //    Gender: 'male',
 //    DateOfBirth: '{{date(new Date(1980,0,1), new Date(2003, 11, 31), "YYYY-MM-dd")}}',
-//    UserName: function(){ return this.UserName; },
+//    UserName: function(){ return this.LoginName; },
 //    Created: '{{date(new Date(2022, 0, 1), new Date(2023,4,30), "YYYY-MM-dd")}}',
 //    LastActive: '{{date(new Date(2023, 4, 1), new Date(2020,4,30), "YYYY-MM-dd")}}',
 //    Introduction: '{{lorem(1, "paragraphs")}}',

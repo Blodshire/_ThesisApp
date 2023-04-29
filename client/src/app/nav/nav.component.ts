@@ -19,6 +19,7 @@ export class NavComponent implements OnInit {
   }
 
   login() {
+    this.model.username = this.model.username.toLowerCase();
     this.accountService.login(this.model).subscribe({
       next: response => this.router.navigateByUrl('/members')
     })
