@@ -1,5 +1,8 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,25 +13,32 @@ namespace API.Controllers
     [Authorize]
     public class AppUsersController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly IAppUserRepository AppUserRepository;
+        private readonly IMapper mapper;
 
-        public AppUsersController(DataContext context)
+        public AppUsersController(IAppUserRepository appUserRepository, IMapper mapper)
         {
-           _context = context;
+            AppUserRepository = appUserRepository;
+            this.mapper = mapper;
         }
 
-        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetAppUsers()
+        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAppUsers()
         {
-            return await _context.AppUsers.ToListAsync(); 
+            //var users = await AppUserRepository.GetUsersAsync();
+            //return Ok(mapper.Map<IEnumerable<MemberDTO>>(users));
+            return Ok(await AppUserRepository.GetMembersAsync());
         }
 
         
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetAppUser(int id)
+        [HttpGet("{loginname}")]
+        public async Task<ActionResult<MemberDTO>> GetAppUser(string loginname)
         {
-            return await _context.AppUsers.Where(x => x.Id == id).FirstOrDefaultAsync();
+            //var user= await AppUserRepository.GetUserByLoginNameAsync(loginname);
+            //return mapper.Map<MemberDTO>(user);
+            return await AppUserRepository.GetMemberByLoginNameAsync(loginname);
+
         }
+
     }
 }
