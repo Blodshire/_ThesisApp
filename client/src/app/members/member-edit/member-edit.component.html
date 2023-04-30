@@ -1,0 +1,62 @@
+<div class="row" *ngIf="member">
+        <div class="col-4">
+            <h1>Profilod</h1>
+        </div>
+        <div class="col-8">
+            <div class="alert alert-info" style="padding:0px; text-align:center" *ngIf="editForm.dirty">
+                <p><strong>Információ:</strong> A nem mentett változások el fognak veszni!</p>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <img src="{{member.photoUrl || '.assets=user.png'}}" alt="{{member.userName}}" class="card-img-tip img-thumbnail">
+                <div class="card-body">
+                    <div>
+                        <strong>Elhelyezkedés:</strong>
+                        <p>{{member.city}}, {{member.country}}</p>
+                    </div>
+                    <div>
+                        <strong>Életkor:</strong>
+                        <p>{{member.age}}</p>
+                    </div>
+                    <div>
+                        <strong>Utoljára elérhető:</strong>
+                        <p>{{member.lastActive}}</p>
+                    </div>
+                    <div>
+                        <strong>Tagság kezdete:</strong>
+                        <p>{{member.created}}</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" [disabled]="!editForm.dirty" form="editForm" class="btn btn-primary col-12">Változtatások mentése</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <tabset class="member-tabset">
+                <tab heading="Részletek szerkesztése">
+                    <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
+                        <br />
+                        <h4 class="mt2">Magamról</h4>
+                        <textarea class="form-control" [(ngModel)]="member.introduction" name="introduction" rows="6"></textarea>
+                        <h4 class="mt2">Ezt keresem</h4>
+                        <textarea class="form-control" [(ngModel)]="member.lookingFor" name="lookingFor" rows="6"></textarea>
+                        <h4 class="mt2">Érdeklődési körök</h4>
+                        <textarea class="form-control" [(ngModel)]="member.interests" name="interests" rows="6"></textarea>
+                        <h4 class="mt2">Elhelyezkedés</h4>
+                        <div class="d-flex flex-row align-items-center">
+                            <label for="city">Város:</label>
+                            <input type="text" [(ngModel)]="member.city" name="city" class="form-control mx-2" />
+                            <label for="country">Ország:</label>
+                            <input type="text" [(ngModel)]="member.country" name="country" class="form-control mx-2" />
+                        </div>
+                    </form>
+                </tab>
+                <tab heading="Képek szerkesztése">
+                    <p>to be implemented :)</p>
+                </tab>
+
+            </tabset>
+        </div>
+    </div>

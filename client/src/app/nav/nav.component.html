@@ -28,7 +28,7 @@
             <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
                 <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>Üdv {{user.loginName | titlecase}}! :)</a>
                 <div class="dropdown-menu mt-3" *dropdownMenu>
-                    <a class="dropdown-item">Profil szerkesztése</a>
+                    <a class="dropdown-item" routerLink="/member/edit">Profil szerkesztése</a>
                     <a class="dropdown-item" (click)="logout()">Kijelentkezés</a>
                 </div>
             </div>

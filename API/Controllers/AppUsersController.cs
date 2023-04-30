@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -40,5 +41,20 @@ namespace API.Controllers
 
         }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDto)
+        {
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User.Identity.Name
+            var appUser = await AppUserRepository.GetUserByLoginNameAsync(username);
+            if (appUser == null)
+                return NotFound();
+
+            mapper.Map(memberUpdateDto, appUser);
+            if(await AppUserRepository.SaveAllAsync())
+                return NoContent();
+
+            return BadRequest("Felhasználó frissítése sikertelen");
+            
+        }
     }
 }
