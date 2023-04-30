@@ -34,8 +34,16 @@ export class MembersService {
     return this.http.put(this.baseUrl + 'appusers', member).pipe(
       map(() => {
         const index = this.members.indexOf(member);
-        this.members[index] = { ...this.members[index] }
+        this.members[index] = { ...this.members[index], ...member }
       })
       )
+  }
+
+  setMainPhoto(photoId: number) {
+    return this.http.put(this.baseUrl + 'appusers/set-main-photo/' + photoId, {});
+  }
+
+  deletePhoto(photoId: number) {
+    return this.http.delete(this.baseUrl + 'appusers/delete-photo/' + photoId);
   }
 }

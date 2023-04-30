@@ -12,3 +12,4 @@
 /API/Data/Migrations
 /API/thesisapp.db-shm
 /API/thesisapp.db-wal
+/API/appsettings.json

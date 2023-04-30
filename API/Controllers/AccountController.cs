@@ -54,7 +54,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDto)
         {
-            var appUser = await _context.AppUsers.FirstOrDefaultAsync(x => x.LoginName == loginDto.UserName);
+            var appUser = await _context.AppUsers.Include(i=> i.Photos).FirstOrDefaultAsync(x => x.LoginName == loginDto.UserName);
             //consider SingleOrDefault
             if(appUser == null)
                 return Unauthorized("Rosszul adta meg a jelszót!");
@@ -71,7 +71,8 @@ namespace API.Controllers
             return new UserDTO
             {
                 LoginName = loginDto.UserName,
-                Token = _tokenService.CreateToken(appUser)
+                Token = _tokenService.CreateToken(appUser),
+                PhotoUrl = appUser.Photos.FirstOrDefault(x=> x.isMain)?.url
             };
 
 

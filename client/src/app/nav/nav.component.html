@@ -25,13 +25,14 @@
         </ul>
 
 
-            <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
-                <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>Üdv {{user.loginName | titlecase}}! :)</a>
-                <div class="dropdown-menu mt-3" *dropdownMenu>
-                    <a class="dropdown-item" routerLink="/member/edit">Profil szerkesztése</a>
-                    <a class="dropdown-item" (click)="logout()">Kijelentkezés</a>
-                </div>
+        <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
+            <img src="{{user.photoUrl || '.assets/user.png'}}" alt="felhasználó" />
+            <a class="dropdown-toggle text-light text-decoration-none ms-2" dropdownToggle>Üdv {{user.loginName | titlecase}}! :)</a>
+            <div class="dropdown-menu mt-3" *dropdownMenu>
+                <a class="dropdown-item" routerLink="/member/edit">Profil szerkesztése</a>
+                <a class="dropdown-item" (click)="logout()">Kijelentkezés</a>
             </div>
+        </div>
 
 
             <form *ngIf="!(accountService.currentUser$ | async)" #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off">
