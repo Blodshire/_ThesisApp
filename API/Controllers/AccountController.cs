@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -14,35 +15,36 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IMapper mapper;
 
-        public AccountController(DataContext context, ITokenService tokenService)
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
             _context = context;
             _tokenService = tokenService;
+            this.mapper = mapper;
         }
 
         [HttpPost("register")] // POST, api/account/register
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
         {
-            if (await AlreadyExists(registerDto.UserName))
+            if (await AlreadyExists(registerDto.LoginName))
                 return BadRequest("Felhasználónév használatban!");
 
+            var appUser = mapper.Map<AppUser>(registerDto);
             using var hmac = new HMACSHA512();
 
-            var appUser = new AppUser
-            {
-                LoginName = registerDto.UserName.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key
-            };
+            appUser.LoginName = registerDto.LoginName.ToLower();
+            appUser.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            appUser.PasswordSalt = hmac.Key;
 
             _context.AppUsers.Add(appUser);
 
             await _context.SaveChangesAsync();
             return new UserDTO
             {
-                LoginName = registerDto.UserName,
-                Token = _tokenService.CreateToken(appUser)
+                LoginName = registerDto.LoginName,
+                Token = _tokenService.CreateToken(appUser),
+                UserName= appUser.UserName
             };
         }
 
@@ -72,7 +74,8 @@ namespace API.Controllers
             {
                 LoginName = loginDto.UserName,
                 Token = _tokenService.CreateToken(appUser),
-                PhotoUrl = appUser.Photos.FirstOrDefault(x=> x.isMain)?.url
+                PhotoUrl = appUser.Photos.FirstOrDefault(x=> x.isMain)?.url,
+                UserName = appUser.UserName,
             };
 
 

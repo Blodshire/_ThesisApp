@@ -1,23 +1,46 @@
-<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+<form [formGroup]="registerForm" (ngSubmit)="registerForm. valid && register()" autocomplete="off">
     <h2 class="text-center text-primary">Regisztráció</h2>
     <hr />
     <div class="mb-3">
-        <input type="text" class="form-control" name="username" [(ngModel)]="model.username" placeholder="Felhasználónév" />
+        <label style="margin-right:10px;">Nemem: </label>
+        <label class="form-check-label">
+            <input type="radio" class="form-check-input" value="male" formControlName="gender" />
+            Férfi
+        </label>
+        <label class="form-check-label" style="margin-left:10px;">
+            <input type="radio" class="form-check-input" value="female" formControlName="gender" />
+            Nő
+        </label>
     </div>
-    <div class="mb-3">
-        <input type="password" class="form-control" name="passsword" [(ngModel)]="model.password" placeholder="Jelszó" />
-    </div>
+
+
+    <app-text-input [formControl]="registerForm.controls['loginName']" [label]="'Bejelentkezési név'"></app-text-input>
+    <app-text-input [formControl]="registerForm.controls['password']" [label]="'Jelszó'" [type]="'password'"></app-text-input>
+    <app-text-input [formControl]="registerForm.controls['confirmPassword']" [label]="'Jelszó megerősítő'" [type]="'password'">></app-text-input>
+    <app-text-input [formControl]="registerForm.controls['userName']" [label]="'Megjelenő név'" ></app-text-input>
+    <app-date-picker [formControl]="registerForm.controls['dateOfBirth']" [label]="'Születési dátum'" [maxDate]="maxDate"></app-date-picker>
+    <app-text-input [formControl]="registerForm.controls['city']" [label]="'Város'"></app-text-input>
+    <app-text-input [formControl]="registerForm.controls['country']" [label]="'Ország'"></app-text-input>
+
     <!--
        <div class="mb-3">
 
            <label>Ki a kedvenc felhasználód?</label>
            <select class="form-select">
-               <option *ngFor="let user of usersFromHomeComponent" [value]="user.username"> {{user.loginName}}</option>
+               <option *ngFor="let user of usersFromHomeComponent" [value]="user.userName"> {{user.loginName}}</option>
            </select>
        </div>
        -->
-    <div>
-        <button class="btn btn-success me-2" type="submit">Regisztráció</button>
-        <button class="btn btn-default" type="button" (click)="cancel()">Mégsem</button>
+    <div style="text-align: center">
+        <button [disabled]="!registerForm.valid" class="btn btn-success me-2" type="submit">Regisztráció</button>
+
+        <div class="row" *ngIf="validationErrors">
+            <ul class="text-danger">
+                <li *ngFor="let error of validationErrors">
+                    {{error}}
+                </li>
+            </ul>
+        </div>
+        <button class="btn btn-default btn-outline-dark" type="button" (click)="cancel()">Mégsem</button>
     </div>
 </form>
