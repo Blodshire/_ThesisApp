@@ -38,6 +38,8 @@ export class MembersService {
   resetUserParams() {
     if (this.user) {
       this.userParams = new UserParams(this.user)
+
+      console.log(this.userParams);
       return this.userParams;
     }
     return; 
@@ -89,6 +91,18 @@ export class MembersService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'appusers/delete-photo/' + photoId);
+  }
+
+  addLike(username: string) {
+   return this.http.post(this.baseUrl + 'likes/' + username, {});
+  }
+
+  getLikes(predicate: string, pageNumber: number, pageSize: number) {
+    let params = this.getPaginationHeaders(pageNumber, pageSize);
+    params = params.append('predicate', predicate);
+
+    return this.getPaginatedResults<Member[]>(this.baseUrl + 'likes', params);
+    //this.http.get<Member[]>(this.baseUrl + 'likes?predicate=' + predicate, {});
   }
 
 
