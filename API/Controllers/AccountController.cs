@@ -44,7 +44,8 @@ namespace API.Controllers
             {
                 LoginName = registerDto.LoginName,
                 Token = _tokenService.CreateToken(appUser),
-                UserName= appUser.UserName
+                UserName= appUser.UserName,
+                Gender= appUser.Gender,
             };
         }
 
@@ -76,6 +77,7 @@ namespace API.Controllers
                 Token = _tokenService.CreateToken(appUser),
                 PhotoUrl = appUser.Photos.FirstOrDefault(x=> x.isMain)?.url,
                 UserName = appUser.UserName,
+                Gender = appUser.Gender
             };
 
 

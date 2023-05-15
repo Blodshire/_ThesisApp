@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -27,11 +28,22 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAppUsers()
+        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAppUsers([FromQuery]UserParams userParams)
         {
+            var currentUser = await appUserRepository.GetUserByLoginNameAsync(User.GetLoginName());
+            userParams.CurrentLogin=currentUser.LoginName;
+
+            if (string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+            }
             //var users = await AppUserRepository.GetUsersAsync();
             //return Ok(mapper.Map<IEnumerable<MemberDTO>>(users));
-            return Ok(await appUserRepository.GetMembersAsync());
+            var returnUsers = await appUserRepository.GetMembersAsync(userParams);
+            Response.AddPaginationHeader(
+                new PaginationHeader(returnUsers.CurrentPage, returnUsers.PageSize
+                                , returnUsers.TotalCount, returnUsers.TotalPages));
+            return Ok(returnUsers);
         }
 
 
@@ -47,7 +59,7 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDto)
         {
-            var username = User.GetUsername(); //User.Identity.Name
+            var username = User.GetLoginName(); //User.Identity.Name
             var appUser = await appUserRepository.GetUserByLoginNameAsync(username);
             if (appUser == null)
                 return NotFound();
@@ -63,7 +75,7 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDTO>> AddPhoto(IFormFile file)
         {
-            var appUser = await appUserRepository.GetUserByLoginNameAsync(User.GetUsername());
+            var appUser = await appUserRepository.GetUserByLoginNameAsync(User.GetLoginName());
             if (appUser == null)
                 return NotFound();
             var result = await photoService.AddPhotoAsync(file);
@@ -95,7 +107,7 @@ namespace API.Controllers
         [HttpPut("set-main-photo/{photoId}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
-            var user = await appUserRepository.GetUserByLoginNameAsync(User.GetUsername());
+            var user = await appUserRepository.GetUserByLoginNameAsync(User.GetLoginName());
             if (user == null)
                 return NotFound();
 
@@ -122,7 +134,7 @@ namespace API.Controllers
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            var user = await appUserRepository.GetUserByLoginNameAsync(User.GetUsername());
+            var user = await appUserRepository.GetUserByLoginNameAsync(User.GetLoginName());
             if (user == null)
                 return NotFound();
 

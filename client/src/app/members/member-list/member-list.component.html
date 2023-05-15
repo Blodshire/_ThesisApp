@@ -1,5 +1,74 @@
-<div class="row">
-    <div class="col-2" *ngFor="let member of members$ | async">
-       <app-member-card [member]="member"></app-member-card>
+<div class="text-center mt-3">
+    <h2>Párok - {{pagination?.totalItems}} összesen</h2>
+</div>
+
+<div class="d-flex justify-content-center" *ngIf="userParams">
+    <form #form="ngForm" class="d-flex mb-3" (ngSubmit)="loadMembers()" autocomplete="off">
+        <div class="d-flex mx-2">
+            <input type="number" class="form-control ms-1"
+                   style="width: 100px" name="minAge" [(ngModel)]="userParams.minAge" />
+            <label class="col-form-label">&emsp;kortól</label>
+        </div>
+        <div class="d-flex mx-2">
+            <input type="number" class="form-control ms-1"
+                   style="width: 100px" name="maxAge" [(ngModel)]="userParams.maxAge" />
+            <label class="col-form-label">&emsp;korig</label>
+        </div>
+        <div class="d-flex px-2">
+            <label class="col-form-label me-2">mutasd a</label>
+            <select name="gender" style="width: 200px" class="form-select ms-1" [(ngModel)]="userParams.gender">
+                <option *ngFor="let gender of genderList" [value]="gender.value">{{gender.display}}</option>
+            </select>
+        </div>
+        <br />
+        <button class="btn btn-primary ms-1" type="submit">Szűrők alkalmazása</button>
+        <button (click)="resetFilters()" class="btn btn-info ms-1" type="submit">Szűrők alaphelyzetbe állítása</button>
+
+
+
+    </form>
+
+</div>
+
+<div class="row justify-content-center" *ngIf="userParams">
+    <div class="btn-group float-end" style="width:200px">
+        <button class="btn btn-success"
+                name="orderBy"
+                [(ngModel)]="userParams.orderBy"
+                btnRadio="lastActive"
+                (click)="loadMembers()">
+            Legutóbb aktív
+        </button>
     </div>
+    <div class="btn-group float-end" style="width:200px">
+        <button class="btn btn-success"
+                name="orderBy"
+                [(ngModel)]="userParams.orderBy"
+                btnRadio="created"
+                (click)="loadMembers()">
+            Legutóbb regisztrált
+        </button>
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-2" *ngFor="let member of members">
+        <app-member-card [member]="member"></app-member-card>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center" *ngIf="pagination">
+    <pagination [boundaryLinks]="true"
+                [totalItems]="pagination.totalItems"
+                [itemsPerPage]="pagination.itemsPerPage"
+                [maxSize]="10"
+                [(ngModel)]="pagination.currentPage"
+                (pageChanged)="pageChanged($event)"
+                previousText="&lsaquo;"
+                nextText="&rsaquo;"
+                firstText="&laquo;"
+                lastText="&raquo;">
+    </pagination>
 </div>
