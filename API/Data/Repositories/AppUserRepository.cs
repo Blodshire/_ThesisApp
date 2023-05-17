@@ -7,7 +7,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Data
+namespace API.Data.Repositories
 {
     public class AppUserRepository : IAppUserRepository
     {
@@ -45,7 +45,7 @@ namespace API.Data
             query = userParams.OrderBy switch
             {
                 "created" => query.OrderByDescending(x => x.Created),
-                _=> query.OrderByDescending(x => x.LastActive)
+                _ => query.OrderByDescending(x => x.LastActive)
             };
             var minDOB = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
             var maxDOB = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));

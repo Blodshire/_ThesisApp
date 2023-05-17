@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
+import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
 import { Member } from '../../_models/member';
+import { Message } from '../../_models/message';
 import { MembersService } from '../../_services/members.service';
+import { MessageService } from '../../_services/message.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -10,14 +13,26 @@ import { MembersService } from '../../_services/members.service';
   styleUrls: ['./member-detail.component.css']
 })
 export class MemberDetailComponent implements OnInit {
-  member: Member | undefined;
+  @ViewChild('memberTabs', {static: true}) memberTabs?: TabsetComponent;
+  currentTab?: TabDirective;
+  member: Member ={} as Member;
   galleryOptions: NgxGalleryOptions[] = [];
   galleryImages: NgxGalleryImage[] = [];
+  messages: Message[] = [];
 
-  constructor(private membersService: MembersService, private route: ActivatedRoute) { }
+  constructor(private membersService: MembersService, private route: ActivatedRoute, private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.loadMember();
+
+    this.route.data.subscribe({
+      next: data => this.member = data['member']
+      })
+
+    this.route.queryParams.subscribe({
+      next: params => {
+        params['tab'] && this.activateTab(params['tab']);
+      }
+      })
     this.galleryOptions = [
       {
         width: '500px',
@@ -26,11 +41,11 @@ export class MemberDetailComponent implements OnInit {
         thumbnailsColumns: 4,
         imageAnimation: NgxGalleryAnimation.Zoom,
         preview: false
-        }
+      }
+     
     ]
-   
+    this.galleryImages = this.getImages();
   }
-
   getImages() {
     if (!this.member) return [];
     const imageUrls = [];
@@ -39,21 +54,49 @@ export class MemberDetailComponent implements OnInit {
         small: photo.url,
         medium: photo.url,
         big: photo.url
-        })
+      })
     }
     return imageUrls;
   }
 
-  loadMember() {
-    const loginName = this.route.snapshot.paramMap.get('loginName');
-    if (!loginName) return;
-    this.membersService.getMember(loginName).subscribe({
-      next: member => {
-        this.member = member;
+  //loadMember() {
+  //  const loginName = this.route.snapshot.paramMap.get('loginName');
+  //  if (!loginName) return;
+  //  this.membersService.getMember(loginName).subscribe({
+  //    next: member => {
+  //      this.member = member;
 
-        console.log(this.getImages());
-        this.galleryImages = this.getImages();
+  //      console.log(this.getImages());
+        
+  //    }
+  //  })
+  //}
+
+  activateTab(heading: string) {
+    if (this.memberTabs) {
+      var tempTab = this.memberTabs.tabs.find(x => x.heading === heading);
+      if (typeof tempTab !== 'undefined') {
+        tempTab.active = true;
       }
-})
+
+    }
+  }
+  loadMessages() {
+    if (this.member) {
+      this.messageService.getMessageThread(this.member.loginName).subscribe({
+        next: messages => {
+          this.messages = messages;
+          this.messages.reverse();
+          console.log(this.messages);
+        }
+      })
+    }
+  }
+  onTabActivation(data: TabDirective) {
+    this.currentTab = data;
+    if (this.currentTab.heading === 'Üzenetek') {
+      this.loadMessages();
+      
+    }
   }
 }

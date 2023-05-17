@@ -9,7 +9,10 @@
                 <button class="btn btn-primary btn-sm" (click)="addLike(member)"><i class="fa fa-heart"></i></button>
             </li>
             <li class="list-inline-item">
-                <button class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i></button>
+                <button class="btn btn-primary btn-sm">
+                    <i class="fa fa-envelope" routerLink='/members/{{member.loginName}}'
+                       [queryParams]="{tab: 'Üzenetek'}"></i>
+                </button>
             </li>
         </ul>
     </div>

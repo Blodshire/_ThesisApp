@@ -6,7 +6,7 @@ using API.Helpers.PaginationHelperParams;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Data
+namespace API.Data.Repositories
 {
     public class LikesRepository : ILikesRepository
     {
@@ -54,9 +54,9 @@ namespace API.Data
 
         public async Task<AppUser> GetUserWithLikes(int userId)
         {
-           return await context.AppUsers
-                .Include(x=> x.LikedUsers)
-                .FirstOrDefaultAsync(x=> x.Id == userId);
+            return await context.AppUsers
+                 .Include(x => x.LikedUsers)
+                 .FirstOrDefaultAsync(x => x.Id == userId);
         }
     }
 }

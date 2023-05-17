@@ -7,7 +7,8 @@ namespace API.Helpers
 {
     public class AutoMapperProfiles : Profile
     {
-        public AutoMapperProfiles() {
+        public AutoMapperProfiles()
+        {
 
             CreateMap<AppUser, MemberDTO>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt
@@ -15,9 +16,18 @@ namespace API.Helpers
                                                 .FirstOrDefault().url))
                 .ForMember(dest => dest.Age, opt => opt
                     .MapFrom(src => src.DateOfBirth.CalculateAge()));
+
             CreateMap<Photo, PhotoDTO>();
             CreateMap<MemberUpdateDTO, AppUser>();
             CreateMap<RegisterDTO, AppUser>();
+
+            CreateMap<Message, MessageDTO>()
+                .ForMember(x => x.SenderPhotoUrl, o => o
+                    .MapFrom(s => s.Sender.Photos
+                        .FirstOrDefault(p => p.isMain).url))
+                .ForMember(x => x.RecipientPhotoUrl, o => o
+                    .MapFrom(s => s.Recipient.Photos
+                        .FirstOrDefault(p => p.isMain).url));
 
         }
     }

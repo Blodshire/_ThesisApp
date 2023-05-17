@@ -1,0 +1,70 @@
+<div class="card">
+    <div class="card-body">
+        <div *ngIf="messages.length === 0">
+            Még nincs üzenet, köszönj valamit! :)
+        </div>
+
+        <ul *ngIf="messages.length > 0" class="chat" style="overflow-y: scroll; height:400px; display: flex; flex-direction: column-reverse" >
+            <li *ngFor="let message of messages">
+                <div>
+                    <span *ngIf="message.senderLoginName!== loginName" class="chat-img float-start" style="margin-right:10px">
+                        <img class="rounded-circle"
+                             src="{{message.senderPhotoUrl || './assets/user.png'}}"
+                             alt="image of user">
+                    </span>
+                    <span *ngIf="message.senderLoginName== loginName" class="chat-img float-end" style="margin-left:10px">
+                        <img class="rounded-circle"
+                             src="{{message.senderPhotoUrl || './assets/user.png'}}"
+                             alt="image of user">
+                    </span>
+                    <div class="chat-body">
+                        <div class="header">
+                            <small class="text-muted">
+                                <span *ngIf="message.senderLoginName!== loginName">
+                                    <span class="fa fa-clock-o">{{message.messageSent + 'Z' | date: "yyyy/MM/dd hh:mm:ss"}}</span>
+                                </span>
+                                <span *ngIf="message.senderLoginName== loginName" style="display: flex; justify-content: right;">
+                                    <span class="fa fa-clock-o">{{message.messageSent + 'Z' | date: "yyyy/MM/dd hh:mm:ss"}}</span>
+                                </span>
+                                <span class="text-danger" *ngIf="!message.dateRead
+                                    && message.senderLoginName !== loginName">
+                                    (Nem látta)
+                                </span>
+                                <span class="text-success" *ngIf="message.dateRead
+                                    && message.senderLoginName !== loginName">
+                                    (Látta {{message.dateRead + 'Z' | date: "yyyy/MM/dd hh:mm:ss"}})
+                                </span>
+                            </small>
+                        </div>
+                        <div *ngIf="message.senderLoginName!== loginName">
+                            <p style="margin-bottom: 10px">
+                                {{message.content}}
+                            </p>
+                        </div>
+                        <div *ngIf="message.senderLoginName== loginName">
+                            <p style="text-align:right">
+                                {{message.content}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card-footer">
+        <form #messageForm="ngForm" (ngSubmit)="sendMessage()" autocomplete="off">
+            <div class="input-group">
+                <input name="msgContent"
+                       required
+                       [(ngModel)]="msgContent"
+                       type="text"
+                       class="form-control input-sm"
+                       placeholder="Küldj egy üzenetet!">
+                <div class="input-group-append">
+                    <button [disabled]="!messageForm.valid" class="btn btn-primary" type="submit">Küldés</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -11,6 +11,7 @@ namespace API.Data
 
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<UserLike> Likes { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -30,7 +31,18 @@ namespace API.Data
                .WithMany(l => l.LikedByUsers)
                .HasForeignKey(s => s.TargetUserId)
                .OnDelete(DeleteBehavior.Cascade);
-            //.OnDelete(DeleteBehavior.Cascade); on non-sqlite dbs
+            //.OnDelete(DeleteBehavior.NoAction); on non-sqlite dbs
+
+            builder.Entity<Message>()
+               .HasOne(s => s.Recipient)
+               .WithMany(l => l.MessagesReceived)
+               .OnDelete(DeleteBehavior.Restrict);
+            //keep messages after profile deleted
+
+            builder.Entity<Message>()
+              .HasOne(s => s.Sender)
+              .WithMany(l => l.MessagesSent)
+              .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

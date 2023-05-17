@@ -1,4 +1,4 @@
-<div class="row" *ngIf="member">
+<div class="row">
     <h1>{{member.userName}} profilja</h1>
     <div class="col-4">
         <div class="card">
@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <strong>Utoljára elérhető:</strong>
-                    <p>{{member.lastActive | date:'yyyy/MM/dd'}}</p>
+                    <p>{{member.lastActive | date:'yyyy/MM/dd hh:mm'}}</p>
                 </div>
                 <div>
                     <strong>Tagság kezdete:</strong>
@@ -24,31 +24,31 @@
             <div class="card-footer">
                 <div class="btn-group d-flex">
                     <button class="btn btn-primary">Kedvelem!</button>
-                    <button class="btn btn-success">Üzenetet küldök!</button>
+                    <button class="btn btn-success" (click)="activateTab('Üzenetek')">Üzenetet küldök!</button>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-8">
-        <tabset class="member-tabset">
-            <tab heading="{{member.userName}} részletei">
+        <tabset class="member-tabset" #memberTabs>
+            <tab heading="{{member.userName}} részletei" (selectTab)="onTabActivation($event)">
                 <br />
                 <h4>Magamról</h4>
                 <p>{{member.introduction}}</p>
                 <h4>Ezt keresem</h4>
                 <p>{{member.lookingFor}}</p>
             </tab>
-            <tab heading="Ezután érdeklődöm">
+            <tab heading="Ezután érdeklődöm" (selectTab)="onTabActivation($event)">
                 <br />
                 <h4>Érdeklődési körök:</h4>
                 <p>{{member.interests}}</p>
             </tab>
-            <tab heading="Képeim">
+            <tab heading="Képeim" (selectTab)="onTabActivation($event)">
                 <ngx-gallery [options]="galleryOptions" [images]="galleryImages" [ngStyle]="{ display: 'inline-block' }"></ngx-gallery>
             </tab>
-            <tab heading="Üzenetek">
+            <tab heading="Üzenetek" (selectTab)="onTabActivation($event)">
                 <br />
-                <p>Később! :)</p>
+                <app-member-messages [loginName]="member.loginName" [messages]="messages"></app-member-messages>
             </tab>
         </tabset>
     </div>

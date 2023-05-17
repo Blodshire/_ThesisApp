@@ -26,6 +26,7 @@ import { TextInputComponent } from './_forms/text-input/text-input.component';
 import { DatePickerComponent } from './_forms/date-picker/date-picker.component';
 import { huLocale } from 'ngx-bootstrap/locale';
 import { defineLocale } from 'ngx-bootstrap/chronos';
+import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 
 
 defineLocale('hu', huLocale);
@@ -47,7 +48,8 @@ defineLocale('hu', huLocale);
     MemberEditComponent,
     PhotoEditorComponent,
     TextInputComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    MemberMessagesComponent
   ],
   imports: [
     BrowserAnimationsModule,
