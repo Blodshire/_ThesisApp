@@ -26,7 +26,7 @@ namespace API.Controllers
             var likedUser = await appUserRepository.GetUserByLoginNameAsync(loginname);
             var sourceUser = await likesRepository.GetUserWithLikes(sourceUserId);
 
-            if (sourceUser.UserName == loginname)
+            if (sourceUser.DisplayName == loginname)
                 return BadRequest("Magadat nem kedvelheted!");
 
             if (likedUser == null)

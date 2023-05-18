@@ -1,8 +1,8 @@
 <div class="row">
-    <h1>{{member.userName}} profilja</h1>
+    <h1>{{member.displayName}} profilja</h1>
     <div class="col-4">
         <div class="card">
-            <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.userName}}" class="card-img-tip img-thumbnail">
+            <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.displayName}}" class="card-img-tip img-thumbnail">
             <div class="card-body">
                 <div>
                     <strong>Elhelyezkedés:</strong>
@@ -31,7 +31,7 @@
     </div>
     <div class="col-8">
         <tabset class="member-tabset" #memberTabs>
-            <tab heading="{{member.userName}} részletei" (selectTab)="onTabActivation($event)">
+            <tab heading="{{member.displayName}} részletei" (selectTab)="onTabActivation($event)">
                 <br />
                 <h4>Magamról</h4>
                 <p>{{member.introduction}}</p>

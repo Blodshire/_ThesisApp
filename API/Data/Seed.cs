@@ -1,5 +1,6 @@
 ﻿using API.DTOs;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Cryptography;
@@ -10,9 +11,9 @@ namespace API.Data
 {
     public class Seed
     {
-        public static async Task SeedUsers(DataContext context)
+        public static async Task SeedUsers(UserManager<AppUser> appUserManager, RoleManager<AppRole> roleManager)
         {
-            if (await context.AppUsers.AnyAsync())
+            if (await appUserManager.Users.AnyAsync())
                 return;
 
             var appUserData = await File.ReadAllTextAsync("Data/UserSeedData.json");
@@ -22,19 +23,38 @@ namespace API.Data
 
             var users = JsonSerializer.Deserialize<List<AppUser>>(appUserData);
 
-            foreach (var user in users)
+            var roles = new List<AppRole>
             {
-                using var hmac = new HMACSHA512();
+                new AppRole {Name ="Member"},
+                new AppRole {Name ="Admin"},
+                new AppRole {Name ="Moderator"}
 
-                user.LoginName = user.LoginName.ToLower();
-                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
-                user.PasswordSalt = hmac.Key;
+            };
 
-                context.AppUsers.Add(user);
+            foreach(var role in roles)
+            {
+                await roleManager.CreateAsync(role);
             }
 
+            foreach (var user in users)
+            {
+
+                user.LoginName = user.LoginName.ToLower();
+
+                await appUserManager.CreateAsync(user, "Pa$$w0rd");
+                await appUserManager.AddToRoleAsync(user, "Member");
+            }
+
+            var admin = new AppUser
+            {
+                LoginName = "admin"
+            };
+
+            await appUserManager.CreateAsync(admin, "Pa$$w0rd");
+            await appUserManager.AddToRolesAsync(admin, new[] { "Admin", "Moderator" });
+
             //save resources by saving context after adding all users 
-            await context.SaveChangesAsync();
+            //await context.SaveChangesAsync(); --before identity
         }
     }
 }

@@ -1,0 +1,18 @@
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width: 30%;">Felhasználónév</th>
+                <th style="width: 40%;">Aktív jogkörök</th>
+                <th style="width: 30%;"></th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of users">
+                <td>{{user.loginName}}</td>
+                <td>{{user.roles}}</td>
+                <td><button (click)="openRolesModal(user)" class="btn btn-danger">Jogkör szerkesztése</button></td>
+            
+        </tbody>
+    </table>
+</div>

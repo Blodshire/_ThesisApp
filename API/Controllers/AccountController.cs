@@ -3,6 +3,7 @@ using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -13,13 +14,13 @@ namespace API.Controllers
 
     public class AccountController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly UserManager<AppUser> appUserManager;
         private readonly ITokenService _tokenService;
         private readonly IMapper mapper;
 
-        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
+        public AccountController(UserManager<AppUser> appUserManager, ITokenService tokenService, IMapper mapper)
         {
-            _context = context;
+            this.appUserManager = appUserManager;
             _tokenService = tokenService;
             this.mapper = mapper;
         }
@@ -31,52 +32,55 @@ namespace API.Controllers
                 return BadRequest("Felhasználónév használatban!");
 
             var appUser = mapper.Map<AppUser>(registerDto);
-            using var hmac = new HMACSHA512();
+            
 
             appUser.LoginName = registerDto.LoginName.ToLower();
-            appUser.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-            appUser.PasswordSalt = hmac.Key;
+           
 
-            _context.AppUsers.Add(appUser);
+            var result = await appUserManager.CreateAsync(appUser, registerDto.Password);
 
-            await _context.SaveChangesAsync();
+            if (!result.Succeeded)
+                return BadRequest("Hiba regisztráció során");
+
+            var roleResult = await appUserManager.AddToRoleAsync(appUser, "Member");
+
+            if (!roleResult.Succeeded)
+                return BadRequest("Hiba regisztráció során");
+
             return new UserDTO
             {
                 LoginName = registerDto.LoginName,
-                Token = _tokenService.CreateToken(appUser),
-                UserName= appUser.UserName,
+                Token = await _tokenService.CreateToken(appUser),
+                DisplayName = appUser.DisplayName,
                 Gender= appUser.Gender,
             };
         }
 
         private async Task<bool> AlreadyExists(string username)
         {
-            return await _context.AppUsers.AnyAsync(x => x.LoginName == username.ToLower());
+            return await appUserManager.Users.AnyAsync(x => x.LoginName == username.ToLower());
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDto)
         {
-            var appUser = await _context.AppUsers.Include(i=> i.Photos).FirstOrDefaultAsync(x => x.LoginName == loginDto.UserName);
+            var appUser = await appUserManager.Users.Include(i=> i.Photos).FirstOrDefaultAsync(x => x.LoginName == loginDto.UserName);
             //consider SingleOrDefault
             if(appUser == null)
                 return Unauthorized("Rosszul adta meg a jelszót!");
 
-            using var hmac = new HMACSHA512(appUser.PasswordSalt);
+            var result = await appUserManager.CheckPasswordAsync(appUser, loginDto.Password);
 
-            var reversedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+            if(!result)
+                return Unauthorized("Rosszul adta meg a jelszót!");
 
-            for(int i = 0; i < reversedHash.Length; i++)
-            {
-                if (reversedHash[i] != appUser.PasswordHash[i])
-                    return Unauthorized("Rosszul adta meg a jelszót!");
-            }
+
             return new UserDTO
             {
                 LoginName = loginDto.UserName,
-                Token = _tokenService.CreateToken(appUser),
+                Token = await _tokenService.CreateToken(appUser),
                 PhotoUrl = appUser.Photos.FirstOrDefault(x=> x.isMain)?.url,
-                UserName = appUser.UserName,
+                DisplayName = appUser.DisplayName,
                 Gender = appUser.Gender
             };
 

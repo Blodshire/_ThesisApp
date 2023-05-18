@@ -43,7 +43,7 @@ namespace API.Data.Repositories
             var likedUsers = users.Select(user => new LikeDTO
             {
                 LoginName = user.LoginName,
-                UserName = user.UserName,
+                DisplayName = user.DisplayName,
                 Age = user.DateOfBirth.CalculateAge(),
                 PhotoUrl = user.Photos.Where(x => x.isMain).FirstOrDefault().url,
                 City = user.City,

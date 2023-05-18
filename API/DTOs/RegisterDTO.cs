@@ -9,7 +9,7 @@ namespace API.DTOs
         public string LoginName { get; set; }
 
         [Required/*(ErrorMessage = "Szükséges egy bejelentkezési név!")*/]
-        public string UserName { get; set; }
+        public string DisplayName { get; set; }
         [Required]
         public string Gender { get; set; }
         [Required]

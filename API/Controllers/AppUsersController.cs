@@ -27,7 +27,7 @@ namespace API.Controllers
             this.mapper = mapper;
             this.photoService = photoService;
         }
-
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAppUsers([FromQuery]UserParams userParams)
         {
@@ -47,7 +47,7 @@ namespace API.Controllers
             return Ok(returnUsers);
         }
 
-
+        //[Authorize(Roles = "Member")]
         [HttpGet("{loginname}")]
         public async Task<ActionResult<MemberDTO>> GetAppUser(string loginname)
         {

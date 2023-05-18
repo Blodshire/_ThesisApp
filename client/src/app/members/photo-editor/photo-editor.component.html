@@ -1,6 +1,6 @@
 <div class="row" *ngIf="member">
     <div class="col-2 mb1" *ngFor="let photo of member.photos">
-        <img src="{{photo.url}}" alt="{{member.userName}} képe" class="img-thumbnail mb1" />
+        <img src="{{photo.url}}" alt="{{member.displayName}} képe" class="img-thumbnail mb1" />
         <div class="text-center">
             <button class="btn btn-sm"
                     [disabled]="photo.isMain"
