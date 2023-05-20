@@ -32,6 +32,9 @@ import { HasRoleDirective } from './_directives/has-role.directive';
 import { UserManagementComponent } from './admin/user-management/user-management.component';
 import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
 import { RolesModalComponent } from './modals/roles-modal/roles-modal.component';
+import { TimeAgoPComponent } from './customTimeAgo/time-ago-p/time-ago-p.component';
+import { TimeAgoSpanComponent } from './customTimeAgo/time-ago-span/time-ago-span.component';
+import { TimeagoIntl } from 'ngx-timeago';
 
 
 defineLocale('hu', huLocale);
@@ -59,7 +62,9 @@ defineLocale('hu', huLocale);
     HasRoleDirective,
     UserManagementComponent,
     PhotoManagementComponent,
-    RolesModalComponent
+    RolesModalComponent,
+    TimeAgoPComponent,
+    TimeAgoSpanComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -74,7 +79,7 @@ defineLocale('hu', huLocale);
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-      HttpClient],
+    HttpClient, TimeagoIntl],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

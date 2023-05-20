@@ -19,6 +19,12 @@ namespace API.Data.Repositories
             this.context = context;
             this.mapper = mapper;
         }
+
+        public void AddGroup(Group group)
+        {
+           context.Groups.Add(group);
+        }
+
         public void AddMessage(Message message)
         {
             context.Messages.Add(message);
@@ -29,9 +35,19 @@ namespace API.Data.Repositories
             context.Messages.Remove(message);
         }
 
+        public async Task<Connection> GetConnectionAsync(string connectionId)
+        {
+           return await context.Connections.FindAsync(connectionId);
+        }
+
         public async Task<Message> GetMessageAsync(int id)
         {
             return await context.Messages.FindAsync(id);
+        }
+
+        public async Task<Group> GetMessageGroupAsync(string groupName)
+        {
+            return await context.Groups.Include(x=>x.Connections).FirstOrDefaultAsync(x=> x.Name== groupName);
         }
 
         public async Task<PagedList<MessageDTO>> GetMessagesForUserAsync(MessageParams messageParams)
@@ -80,6 +96,11 @@ namespace API.Data.Repositories
             }
 
             return mapper.Map<IEnumerable<MessageDTO>>(messages);
+        }
+
+        public void RemoveConnection(Connection connection)
+        {
+            context.Connections.Remove(connection);
         }
 
         public async Task<bool> SaveAllAsync()

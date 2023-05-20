@@ -15,7 +15,7 @@ export class MemberMessagesComponent implements OnInit {
   msgContent = '';
 
 
-  constructor(private messageService: MessageService) { }
+  constructor(public messageService: MessageService) { }
 
   ngOnInit(): void {
   }
@@ -23,22 +23,10 @@ export class MemberMessagesComponent implements OnInit {
   sendMessage() {
     if (!this.loginName)
       return;
-    this.messageService.sendMessage(this.loginName, this.msgContent).subscribe({
-      next: message => {
-        //------------- evil datetime conversion for non-chrome? browsers
-        var dateString = message.messageSent.toString();
-        dateString = dateString.replace(' ', 'T');
-        message.messageSent = new Date(dateString);
-        //-------------
-
-        //very evil reversal hack
-        this.messages.reverse();
-        this.messages.push(message);
-        this.messages.reverse();
-        this.messageForm?.reset();
-        
-      }
-    });
+    this.messageService.sendMessage(this.loginName, this.msgContent)?.then(() =>
+      this.messageForm?.reset()
+    );
+   
   }
 
 }

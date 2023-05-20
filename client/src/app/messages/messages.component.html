@@ -56,7 +56,7 @@
                         <strong>{{message.senderLoginName | titlecase}}</strong>
                     </div>
                 </td>
-                <td>{{message.messageSent | date: 'yyyy/MM/dddd'}}</td>
+                <td><app-time-ago-span [displayDate]="message.messageSent"></app-time-ago-span></td>
                 <td>
                     <button (click)="$event.stopPropagation() || delMessage(message.id)" class="btn btn-danger">Törlés</button>
                 </td>

@@ -10,6 +10,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoModule } from 'ngx-timeago';
 
 
 
@@ -30,7 +31,10 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     BsDatepickerModule.forRoot(),
     PaginationModule.forRoot(),
     ButtonsModule.forRoot(),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    TimeagoModule.forRoot({
+      formatter: { provide: TimeagoFormatter, useClass: TimeagoCustomFormatter }
+    })
   ],
   exports: [
     BsDropdownModule,
@@ -42,7 +46,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     BsDatepickerModule,
     PaginationModule,
     ButtonsModule,
-    ModalModule
-    ]
+    ModalModule,
+    TimeagoModule
+  ]
 })
 export class SharedModule { }

@@ -1,11 +1,10 @@
 <div class="card">
     <div class="card-body">
-        <div *ngIf="messages.length === 0">
+        <div *ngIf="(messageService.messageThread$ | async )?.length===0 || (messageService.messageThread$ | async )?.length==null">
             Még nincs üzenet, köszönj valamit! :)
         </div>
-
-        <ul *ngIf="messages.length > 0" class="chat" style="overflow-y: scroll; height:400px; display: flex; flex-direction: column-reverse" >
-            <li *ngFor="let message of messages">
+        <ul *ngIf="(messageService.messageThread$ | async )?.length > 0 && (messageService.messageThread$ | async )?.length!==null" class="chat" style="overflow-y: scroll; height:400px; display: flex; flex-direction: column-reverse">
+            <li *ngFor="let message of (messageService.messageThread$ | async)">
                 <div>
                     <span *ngIf="message.senderLoginName!== loginName" class="chat-img float-start" style="margin-right:10px">
                         <img class="rounded-circle"
@@ -21,10 +20,10 @@
                         <div class="header">
                             <small class="text-muted">
                                 <span *ngIf="message.senderLoginName!== loginName">
-                                    <span class="fa fa-clock-o">{{message.messageSent + 'Z' | date: "yyyy/MM/dd hh:mm:ss"}}</span>
+                                    <span class="fa fa-clock-o"><app-time-ago-span [displayDate]="message.messageSent"></app-time-ago-span></span>
                                 </span>
                                 <span *ngIf="message.senderLoginName== loginName" style="display: flex; justify-content: right;">
-                                    <span class="fa fa-clock-o">{{message.messageSent + 'Z' | date: "yyyy/MM/dd hh:mm:ss"}}</span>
+                                    <span class="fa fa-clock-o"><app-time-ago-span [displayDate]="message.messageSent"></app-time-ago-span></span>
                                 </span>
                                 <span class="text-danger" *ngIf="!message.dateRead
                                     && message.senderLoginName !== loginName">
@@ -32,7 +31,7 @@
                                 </span>
                                 <span class="text-success" *ngIf="message.dateRead
                                     && message.senderLoginName !== loginName">
-                                    (Látta {{message.dateRead + 'Z' | date: "yyyy/MM/dd hh:mm:ss"}})
+                                    (Látta <app-time-ago-span [displayDate]="message.dateRead"></app-time-ago-span>)
                                 </span>
                             </small>
                         </div>

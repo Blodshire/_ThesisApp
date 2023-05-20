@@ -29,6 +29,10 @@ namespace API.Helpers
                     .MapFrom(s => s.Recipient.Photos
                         .FirstOrDefault(p => p.isMain).url));
 
+            CreateMap<DateTime,DateTime>().ConvertUsing(date=> DateTime.SpecifyKind(date, DateTimeKind.Utc));
+            CreateMap<DateTime?, DateTime?>().ConvertUsing(date => date.HasValue ? DateTime.SpecifyKind(date.Value, DateTimeKind.Utc) : null);
+
+
         }
     }
 }
