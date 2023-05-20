@@ -20,7 +20,7 @@
                         <div class="header">
                             <small class="text-muted">
                                 <span *ngIf="message.senderLoginName!== loginName">
-                                    <span class="fa fa-clock-o"><app-time-ago-span [displayDate]="message.messageSent"></app-time-ago-span></span>
+                                    <span class="fa fa-clock-o"><app-time-ago-span [displayDate]="message.messageSent" ></app-time-ago-span></span>
                                 </span>
                                 <span *ngIf="message.senderLoginName== loginName" style="display: flex; justify-content: right;">
                                     <span class="fa fa-clock-o"><app-time-ago-span [displayDate]="message.messageSent"></app-time-ago-span></span>

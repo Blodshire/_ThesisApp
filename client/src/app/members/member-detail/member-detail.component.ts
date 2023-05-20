@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
 import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
+import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
 import { Member } from '../../_models/member';
 import { Message } from '../../_models/message';
@@ -28,6 +29,8 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute,
     private messageService: MessageService,
     public presenceService: PresenceService,
+    private membersService: MembersService,
+    private toastr: ToastrService,
     private accountService: AccountService, private router: Router) {
 
     this.accountService.currentUser$.pipe(take(1)).subscribe({
@@ -120,5 +123,10 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     } else {
       this.messageService.stopHubConnection();
     }
+  }
+  addLike(member: Member) {
+    this.membersService.addLike(member.loginName).subscribe({
+      next: () => this.toastr.success('Mostantól kedveled őt: ' + member.displayName)
+    })
   }
 }

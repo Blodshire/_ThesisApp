@@ -11,7 +11,6 @@ export class TimeAgoSpanComponent {
   @Input() displayDate = Date
 
   constructor(intl: TimeagoIntl) {
-    console.log(intl);
     intl.strings = hunStrings;
     intl.changes.next();
   }

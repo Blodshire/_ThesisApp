@@ -43,7 +43,7 @@ export class MessageService {
       //  //messages[i].dateRead = new Date(dateString);
       //}
       this.counter = 0;
-
+      console.log(messages);
       this.msgThreadSrc.next(messages);
     })
 
