@@ -9,6 +9,7 @@
 /.vs/VSWorkspaceState.json
 /.vs/ProjectSettings.json
 /.vs/slnx.sqlite
+/API/Data/_sqliteMigrations
 /API/Data/Migrations
 /API/thesisapp.db-shm
 /API/thesisapp.db-wal
