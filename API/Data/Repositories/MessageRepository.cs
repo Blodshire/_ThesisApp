@@ -92,7 +92,6 @@ namespace API.Data.Repositories
                 {
                     msg.DateRead = DateTime.UtcNow;
                 }
-                await context.SaveChangesAsync();
             }
 
             return mapper.Map<IEnumerable<MessageDTO>>(messages);
@@ -103,9 +102,9 @@ namespace API.Data.Repositories
             context.Connections.Remove(connection);
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await context.SaveChangesAsync() > 0;
-        }
+        //public async Task<bool> SaveAllAsync()
+        //{
+        //    return await context.SaveChangesAsync() > 0;
+        //}
     }
 }

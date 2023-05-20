@@ -12,15 +12,13 @@ namespace API.SignalR
     [Authorize]
     public class MessageHub : Hub
     {
-        private readonly IMessageRepository messageRepository;
-        private readonly IAppUserRepository appUserRepository;
+        private readonly IUnitOfWork uow;
         private readonly IMapper mapper;
         private readonly IHubContext<PresenceHub> presenceHub;
 
-        public MessageHub(IMessageRepository messageRepository, IAppUserRepository appUserRepository, IMapper mapper, IHubContext<PresenceHub> presenceHub)
+        public MessageHub(IUnitOfWork uow, IMapper mapper, IHubContext<PresenceHub> presenceHub)
         {
-            this.messageRepository = messageRepository;
-            this.appUserRepository = appUserRepository;
+            this.uow = uow;
             this.mapper = mapper;
             this.presenceHub = presenceHub;
         }
@@ -34,7 +32,10 @@ namespace API.SignalR
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
             await AddToGroupAsync(groupName);
 
-            var messages = await messageRepository.GetMessageThreadAsync(Context.User.GetLoginName(), otherLoginName);
+            var messages = await uow.messageRepository.GetMessageThreadAsync(Context.User.GetLoginName(), otherLoginName);
+            if (uow.HasChanges())
+                await uow.Complete();
+            
 
             await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
         }
@@ -56,8 +57,8 @@ namespace API.SignalR
             if (loginName == msg.RecipientLoginName.ToLower())
                 throw new HubException("Magadnak nem küldhetsz üzenetet!");
 
-            var sender = await appUserRepository.GetUserByLoginNameAsync(loginName);
-            var recipient = await appUserRepository.GetUserByLoginNameAsync(msg.RecipientLoginName.ToLower());
+            var sender = await uow.appUserRepository.GetUserByLoginNameAsync(loginName);
+            var recipient = await uow.appUserRepository.GetUserByLoginNameAsync(msg.RecipientLoginName.ToLower());
 
             if (recipient == null)
                 throw new HubException("Ilyen felhasználó nincs!");
@@ -72,7 +73,7 @@ namespace API.SignalR
             };
 
             var groupName = GetGroupName(sender.LoginName, recipient.LoginName);
-            var group = await messageRepository.GetMessageGroupAsync(groupName);
+            var group = await uow.messageRepository.GetMessageGroupAsync(groupName);
 
             if(group.Connections.Any(x=> x.LoginName == recipient.LoginName))
                 insertMessage.DateRead= DateTime.UtcNow;
@@ -85,9 +86,9 @@ namespace API.SignalR
                         , new { loginName = sender.LoginName, displayName = sender.DisplayName });
                 }
             }
-            messageRepository.AddMessage(insertMessage);
+            uow.messageRepository.AddMessage(insertMessage);
 
-            if (await messageRepository.SaveAllAsync())
+            if (await uow.Complete())
             {
                 //var group = GetGroupName(sender.LoginName, recipient.LoginName);
                 await Clients.Group(groupName).SendAsync("NewMessage", mapper.Map<MessageDTO>(insertMessage));
@@ -102,26 +103,26 @@ namespace API.SignalR
 
         private async Task<bool> AddToGroupAsync(string groupName)
         {
-            var group = await messageRepository.GetMessageGroupAsync(groupName);
+            var group = await uow.messageRepository.GetMessageGroupAsync(groupName);
             var connection = new Connection(Context.ConnectionId, Context.User.GetLoginName());
 
             if(group == null)
             {
                 group = new Group(groupName);
-                messageRepository.AddGroup(group);
+                uow.messageRepository.AddGroup(group);
             }
             group.Connections.Add(connection);
 
-            return await messageRepository.SaveAllAsync();
+            return await uow.Complete();
         }
 
         private async Task RemvoeFromGroupAsync()
         {
-            messageRepository.RemoveConnection(
-                await messageRepository.GetConnectionAsync(Context.ConnectionId)
+            uow.messageRepository.RemoveConnection(
+                await uow.messageRepository.GetConnectionAsync(Context.ConnectionId)
                 );
 
-            await messageRepository.SaveAllAsync();
+            await uow.Complete();
         }
     }
 }

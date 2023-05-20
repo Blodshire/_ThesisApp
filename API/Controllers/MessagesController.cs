@@ -11,14 +11,12 @@ namespace API.Controllers
 {
     public class MessagesController : BaseApiController
     {
-        private readonly IAppUserRepository appUserRepository;
-        private readonly IMessageRepository messageRepository;
+        private readonly IUnitOfWork uow;
         private readonly IMapper mapper;
 
-        public MessagesController(IAppUserRepository appUserRepository, IMessageRepository messageRepository, IMapper mapper)
+        public MessagesController(IUnitOfWork uow, IMapper mapper)
         {
-            this.appUserRepository = appUserRepository;
-            this.messageRepository = messageRepository;
+            this.uow = uow;
             this.mapper = mapper;
         }
 
@@ -30,8 +28,8 @@ namespace API.Controllers
             if (loginName == msg.RecipientLoginName.ToLower())
                 return BadRequest("Magadnak nem küldhetsz üzenetet!");
 
-            var sender = await appUserRepository.GetUserByLoginNameAsync(loginName);
-            var recipient = await appUserRepository.GetUserByLoginNameAsync(msg.RecipientLoginName.ToLower());
+            var sender = await uow.appUserRepository.GetUserByLoginNameAsync(loginName);
+            var recipient = await uow.appUserRepository.GetUserByLoginNameAsync(msg.RecipientLoginName.ToLower());
 
             if (recipient == null)
                 return NotFound();
@@ -45,9 +43,9 @@ namespace API.Controllers
                 Content = msg.Content
             };
 
-            messageRepository.AddMessage(insertMessage);
+            uow.messageRepository.AddMessage(insertMessage);
 
-            if (await messageRepository.SaveAllAsync())
+            if (await uow.Complete())
                 return Ok(mapper.Map<MessageDTO>(insertMessage));
 
             return BadRequest("Az üzenetet nem sikerült elküldeni!");
@@ -58,7 +56,7 @@ namespace API.Controllers
         {
             messageParams.LoginName = User.GetLoginName().ToLower();
 
-            var returnMessages = await messageRepository.GetMessagesForUserAsync(messageParams);
+            var returnMessages = await uow.messageRepository.GetMessagesForUserAsync(messageParams);
 
             Response.AddPaginationHeader(
                 new PaginationHeader(
@@ -70,20 +68,20 @@ namespace API.Controllers
             return returnMessages;
         }
 
-        [HttpGet("thread/{loginname}")]
-        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetMessageThread(string loginname)
-        {
-            var currentLoginName = User.GetLoginName().ToLower();
+        //[HttpGet("thread/{loginname}")]
+        //public async Task<ActionResult<IEnumerable<MessageDTO>>> GetMessageThread(string loginname)
+        //{
+        //    var currentLoginName = User.GetLoginName().ToLower();
 
-            return Ok(await messageRepository.GetMessageThreadAsync(currentLoginName, loginname));
-        }
+        //    return Ok(await uow.messageRepository.GetMessageThreadAsync(currentLoginName, loginname));
+        //}
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMessage(int id)
         {
             var loginName = User.GetLoginName().ToLower();
 
-            var message = await messageRepository.GetMessageAsync(id);
+            var message = await uow.messageRepository.GetMessageAsync(id);
 
             if(message.SenderLoginName!= loginName &&message.RecipientLoginName!=loginName) {
                 return Unauthorized();
@@ -95,9 +93,9 @@ namespace API.Controllers
                 message.RecipientDeleted = true;
 
             if (message.SenderDeleted && message.RecipientDeleted)
-                messageRepository.DeleteMessage(message);
+                uow.messageRepository.DeleteMessage(message);
 
-            if (await messageRepository.SaveAllAsync())
+            if (await uow.Complete())
                 return Ok();
             return BadRequest("Üzenetet nem lehet törölni");
         }
