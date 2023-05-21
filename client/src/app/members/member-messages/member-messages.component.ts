@@ -13,6 +13,7 @@ export class MemberMessagesComponent implements OnInit {
   @Input() loginName?: string;
   @Input() messages: Message[] = [];
   msgContent = '';
+  loading = false;
 
 
   constructor(public messageService: MessageService) { }
@@ -23,9 +24,10 @@ export class MemberMessagesComponent implements OnInit {
   sendMessage() {
     if (!this.loginName)
       return;
+    this.loading = true;
     this.messageService.sendMessage(this.loginName, this.msgContent)?.then(() =>
       this.messageForm?.reset()
-    );
+    ).finally(() => this.loading = false);
    
   }
 
