@@ -40,7 +40,7 @@ namespace API.Controllers
             var result = await appUserManager.CreateAsync(appUser, registerDto.Password);
 
             if (!result.Succeeded)
-                return BadRequest("Hiba regisztráció során");
+                return BadRequest(result.Errors);
 
             var roleResult = await appUserManager.AddToRoleAsync(appUser, "Member");
 

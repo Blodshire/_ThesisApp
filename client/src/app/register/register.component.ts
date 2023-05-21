@@ -36,7 +36,7 @@ export class RegisterComponent implements OnInit {
       country: ['', Validators.required],
       loginName: ['', Validators.required],
       password: ['',
-        [Validators.required, Validators.minLength(4), Validators.maxLength(8)]
+        [Validators.required]
       ],
       confirmPassword: ['', [Validators.required, this.matchValues('password')]]
     })
@@ -58,7 +58,8 @@ export class RegisterComponent implements OnInit {
         this.router.navigateByUrl('/members');
       },
       error: error => {
-        this.validationErrors = error
+        this.validationErrors = error.error
+        console.log(this.validationErrors);
       }
       })
   }

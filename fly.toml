@@ -1,0 +1,22 @@
+# fly.toml app configuration file generated for thesisapp on 2023-05-21T11:23:43+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "thesisapp"
+primary_region = "otp"
+
+[env]
+ASPNETCORE_urls="http://+:8080"
+CloudinarySettings__CloudName="dhqydmhfj"
+CloudinarySettings__ApiKey="517373926897162"
+
+[build]
+  image = "bsiranko/thesisapp:latest"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0

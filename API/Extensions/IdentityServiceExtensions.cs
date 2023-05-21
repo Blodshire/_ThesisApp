@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Entities;
+using API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +19,7 @@ namespace API.Extensions
             }
             ).AddRoles<AppRole>()
             .AddRoleManager<RoleManager<AppRole>>()
+            .AddErrorDescriber<CustomIdentityErrorDescriber>()
             .AddEntityFrameworkStores<DataContext>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

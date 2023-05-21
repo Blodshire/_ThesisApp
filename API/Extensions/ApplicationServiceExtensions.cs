@@ -1,10 +1,12 @@
 ﻿using API.Data;
 using API.Data.Repositories;
+using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
 using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -15,10 +17,7 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(config.GetConnectionString("DEV"));
-            });
+            
             services.AddCors();
             //Transient,Scoped,Singleton
             services.AddScoped<ITokenService, TokenService>();
